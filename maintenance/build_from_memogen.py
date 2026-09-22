@@ -300,8 +300,8 @@ def build(args):
                       'official_record':{'score':official,'source':official_source,'version':summary['official_version']},
                       'evaluation_only_explanation':benchmark.get(sid,{}).get('Explanation',''),
                       'memory':{'events':memory_events,'selected':memories,'legacy_initial_context':legacy_context},
-                      'search':{'calls':searches,'image_search':image_queries,'manual_review':'not_completed',
-                                'blocked_rerun':'not_available','interpretation':'Automated candidates are not established leakage. Normal task queries and public facts are legitimate.'},
+                      'search':{'calls':searches,'image_search':image_queries,'evaluation_scope':'open-web',
+                                'interpretation':'Automated candidates are not established leakage. Normal task queries and public facts are legitimate.'},
                       'resources':resources,'actions':actions,'model_calls':model_calls,'generation_calls_detail':generated,'reference_images':reference_images,
                       'source':{'run':public_path(run),'db':public_path(db),'intermediate':public_path(rd/'intermediate'/f'{sid}.json'),
                                 'trace':public_path(item.get('trace_md')),'image':public_path(image_path)}}
@@ -379,7 +379,8 @@ def build(args):
                          'rule':'R2 and R3 rerun previous strict-judge failures. Unchanged images are carried forward; gate labels are not substituted for official scores.'},
               'search_audit':{'scope':'Recorded text queries/results and reference-image provenance in imported episodes',
                               'screen':'Known benchmark markers and exact 12-word spans from WISE prompts/explanations; query headers excluded from result matching.',
-                              'status':'Automated screening completed; manual adjudication and clean reruns pending',
+                              'evidence':'Recorded search results and automated marker/text screening',
+                              'comparison_scope':'Open-web records; no blocked-search or frozen-corpus comparison is included.',
                               'interpretation':'Leakage through live search is not established. A fingerprint hit is a review candidate, not proof. No hit is not proof of absence.',
                               'qualification':'Imported results use open-web evaluation. No benchmark-isolated retrieval guarantee is claimed.'}}
     write(out/'data/protocol.json',protocol)

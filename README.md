@@ -1,4 +1,4 @@
-# MemoGen Review Archive
+# MemoGen Supplementary Material
 
 [View the audit website](https://chatonz.github.io/memogen-audit/)
 
@@ -10,12 +10,12 @@ The author selected the original local experiment archive for this release. **Hu
 
 ## Public content
 
-- Search and filter by round, task, category, judge/WISE disagreement, retrieval provenance, and search-audit status.
+- Search and filter by round, task, category, judge/WISE disagreement, retrieval provenance, and search-screening matches.
 - Per-instance generated image, original image SHA256, generation prompt, rubric, judge response, official-protocol label, model-call metadata, tool inputs/outputs, selected image references, and source pointers.
 - Own-task and other-task memory provenance; paired-source retrieval is reported in a separate analogical-transfer section with both recorded run versions.
 - Judge prompts, parser and memory-code snapshots; run manifests; current-code defaults are distinguished from recorded historical settings.
-- Logged live-search queries, snippets, URLs and automatic candidate screening. Manual source adjudication and clean-search reruns are explicitly pending. Live-search leakage is not claimed to be established.
-- A reviewer-request checklist mapping every requested item to evidence and remaining work.
+- Logged live-search queries, snippets, URLs and automated screening. These records document open-web evaluation; benchmark-specific leakage is not established. A blocked-search or frozen-corpus comparison is outside this release.
+- A rebuttal evidence index linking judge settings, memory rules, traces, evaluation records and search methods.
 
 ## Evaluation versions
 
@@ -62,7 +62,7 @@ It reads source SQLite databases in read-only mode and never runs a model or mod
 2. Regenerate the public export from source records; do not hand-edit labels or provenance counts.
 3. Run the validator. It checks cohort/routing identities, image availability, official alignment, checksums and exclusion of human scoring and credentials.
 4. For manual live-search audit results, add source-backed adjudications with query/result identifiers, exact excerpts, decision and reviewer metadata. Keep ordinary knowledge matches separate from benchmark-specific exposure.
-5. Publish blocked-search rerun results only when the image/label pairs, blocking rules and clean initial memory state are available. Until then, retain the pending status and open-web qualification.
+5. Publish blocked-search rerun results only when the image/label pairs, blocking rules and clean initial memory state are available. Describe the evaluation setting and evidence directly, without workflow or completion labels.
 
 The existing reference images retain their recorded source attribution. Preview assets are derived WebP images; hashes identify the original generation and reference files. The public export omits embedded image bytes, credentials and local machine path prefixes. Compact execution traces contain recorded tool calls and model-call metadata, not a reconstructed reasoning transcript.
 
