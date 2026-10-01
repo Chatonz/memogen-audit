@@ -1,10 +1,10 @@
 # Round 3
 
-[Results](../README.md) · [Round 1](round-1.md) · [Round 2](round-2.md) · [Round 3](round-3.md)
+[Results](../README.md) · [Round 1](round_01.md) · [Round 2](round_02.md) · [Round 3](round_03.md)
 
 **65 images** · Memory-judge pass: **15/65 (23.1%)** · WISE pass: **39/65 (60.0%)**
 
-Evaluation: WISE historical R3 · 2026-07-19. Memory columns count selected records.
+Evaluation: [WISE · Round 3](experimental_setup.md#evaluation). Memory columns count selected records.
 
 
 ## Biology

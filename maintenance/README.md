@@ -31,11 +31,11 @@ python maintenance/validate.py site
 python maintenance/build_readme.py --check
 ```
 
-The exporter reads the following experiment and its aligned evaluation records:
+The source experiment is identified by `imported_run` in the [experiment configuration](../site/data/protocol.json). The exporter reads that run and its aligned evaluation records.
 
-```text
-eval_outputs/v4_benchmark_pool/v4_wise_gpt55_wise_strict_v1_r1summary_20260717
-```
+## File names
+
+Documents and configuration files use descriptive `snake_case` names. Round numbers use two digits (`round_01`); example pages use the WISE task ID (`wise_0002`). Instance keys such as `r2-2` link the image, data record and CSV row.
 
 ## Read an instance record
 

@@ -358,12 +358,13 @@ def build(args):
         ct=Counter(r['provenance'] for r in rows)
         transfer.append({'run':name,'mentions':len(rows),'counts':dict(ct),'targets_with_paired_source':len({r['target_id'] for r in rows if r['provenance']=='paired_source'}),'target_n':len(target_map),'rows':rows})
     write(out/'data/transfer.json',transfer)
-    protocol={'imported_run':public_path(run),'source_status':'Original archived run selected by the author for this public release',
-              'separate_final_protocol_statement':'The author reports that final experiments on another server exclude official labels, explanations and hidden annotations from generation, memory judging and memory. That server has not been imported into this archive.',
+    protocol={'imported_run':public_path(run),'source_status':'WISE image-generation experiment: 1,000 tasks across three rounds',
+              'evaluations':{f'round_{n:02d}':{'name':f'WISE · Round {n}',
+                                            'recorded_version':next(r['official_version'] for r in summaries if r['round']==n)} for n in (1,2,3)},
               'manifest_by_round':manifests,
-              'judge':{'model':'gpt-5.5','profile':'evolution_wise_strict_v1','prompt_file':'config/archived_judge_prompt.txt',
+              'judge':{'name':'Memory judge','model':'gpt-5.5','profile':'evolution_wise_strict_v1','prompt_file':'config/memory_judge_prompt.txt',
                        'prompt_sha256':digest(ROOT/'prompts/evolution_judge_wise_strict_v1.txt'),
-                       'prompt_scope':'Archived configuration uses target_explanation; not the final isolated-server judge configuration.',
+                       'prompt_scope':'Inputs: task prompt, target explanation and generated image.',
                        'temperature':{'value':0,'evidence':'Current runner implementation; historical request value not independently logged'},
                        'max_completion_tokens':{'value':4096,'evidence':'Current config default; historical environment override not recovered'},
                        'decision':'Parsed JSON pass / final_judgment; see released parser source',
@@ -385,15 +386,15 @@ def build(args):
                               'qualification':'Imported results use open-web evaluation. No benchmark-isolated retrieval guarantee is claimed.'}}
     write(out/'data/protocol.json',protocol)
     copied={
-      'prompts/evolution_judge_wise_strict_v1.txt':'config/archived_judge_prompt.txt',
-      'evaluation/judge_profiles.py':'config/judge_profiles.py.txt',
-      'agents/v4/relation_memory.py':'config/relation_memory.py.txt',
-      'agents/v4/memory_tools.py':'config/memory_tools.py.txt',
-      'agents/v4/metadata.py':'config/metadata_sanitization.py.txt',
+      'prompts/evolution_judge_wise_strict_v1.txt':'config/memory_judge_prompt.txt',
+      'evaluation/judge_profiles.py':'config/memory_judge.py',
+      'agents/v4/relation_memory.py':'config/memory_admission.py',
+      'agents/v4/memory_tools.py':'config/memory_retrieval.py',
+      'agents/v4/metadata.py':'config/metadata_filter.py',
     }
     for src,dst in copied.items():
         p=out/dst;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(sanitize((ROOT/src).read_text()))
-    for rnd, m in manifests.items():write(out/'config'/f'round_{rnd}_manifest.json',m)
+    for rnd, m in manifests.items():write(out/'config'/f'round_{int(rnd):02d}.json',m)
     write(out/'data/index.json',summaries)
     write(out/'data/summary.json',{'updated_at':datetime.now(timezone.utc).isoformat(),'episodes':len(summaries),'unique_tasks':len({r['id'] for r in summaries}),
                                  'source':public_path(run),'rounds':rounds,'categories':sorted({r['category'] for r in summaries}),
@@ -401,7 +402,7 @@ def build(args):
     p=out/'downloads/episodes.csv';p.parent.mkdir(exist_ok=True)
     with p.open('w',newline='') as f:
         w=csv.DictWriter(f,fieldnames=list(summaries[0]));w.writeheader();w.writerows(summaries)
-    with (out/'downloads/official_r1_alignment.csv').open('w',newline='') as f:
+    with (out/'downloads/wise_round_01_scores.csv').open('w',newline='') as f:
         w=csv.DictWriter(f,fieldnames=['id','judge','official','original_sha256']);w.writeheader()
         for r in summaries:
             if r['round']==1:

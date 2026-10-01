@@ -1,4 +1,4 @@
-# Experimental settings
+# Experimental setup
 
 [Results](../README.md) · [Instance index](README.md)
 
@@ -8,18 +8,20 @@
 | --- | --- |
 | Dataset | WISE, 1,000 tasks |
 | Controller / reference VLM | GPT-5.5 |
-| Memory judge | gpt-5.5 / `evolution_wise_strict_v1` |
+| Memory judge | GPT-5.5; binary pass/fail decisions |
 | Judge inputs | Task prompt, target explanation and generated image |
 | Judge decision | Parsed JSON `pass` / `final_judgment` |
-| R1 WISE evaluation | September 19, 2026; Qwen3.5-35B-A3B; WISE protocol, revision `eb51174` |
+| R1 WISE evaluation | Qwen3.5-35B-A3B; WISE protocol, revision `eb51174` |
 | R1 evaluator decoding | Temperature 0; thinking disabled; maximum 500 tokens |
-| R2 / R3 WISE evaluation | July 2026; per-image evaluation versions recorded in the instance index |
+| R2 / R3 WISE evaluation | WISE protocol; scores aligned to the generated images in each round |
 | R2 / R3 routing | Generate new images for previous-round memory-judge failures; retain passing images |
 | Search | Live web text and image retrieval |
 
+[Evaluation versions and run configuration](../site/data/protocol.json)
+
 ### Judge configuration
 
-[Judge prompt](../site/config/archived_judge_prompt.txt) · [Prompt builder and parser](../site/config/judge_profiles.py.txt)
+[Judge prompt](../site/config/memory_judge_prompt.txt) · [Prompt builder and parser](../site/config/memory_judge.py)
 
 Prompt SHA256: `976ab487f5bef1fdaeea28cb41dbb651ae063b38643eba4dfe2d996fde5c4786`.
 
@@ -38,14 +40,14 @@ The runner snapshot sets judge temperature to 0; the configuration default is 4,
 | Negative memory | Failure descriptions and repair hints |
 | R1 retrieval records | Legacy context; structured query/open/select events begin in R2 |
 
-[Memory admission code](../site/config/relation_memory.py.txt) · [Retrieval code](../site/config/memory_tools.py.txt) · [Selected-record provenance](../site/downloads/memory_provenance.csv)
+[Memory admission code](../site/config/memory_admission.py) · [Retrieval code](../site/config/memory_retrieval.py) · [Selected-record provenance](../site/downloads/memory_provenance.csv)
 
 ## Analogical transfer
 
-| Label | Run |
-| --- | --- |
-| All-memory v1 | `wise_transfer_120_all_memory_strict_norepair_20260724` |
-| All-memory v2 | `wise_transfer_120_all_memory_v2_strict_norepair_20260724` |
+| Run | Targets | Memory |
+| --- | --- | --- |
+| All-memory v1 | 120 | All-memory retrieval |
+| All-memory v2 | 120 | All-memory retrieval |
 
 [Target prompts and source records](../site/data/transfer.json)
 
@@ -57,9 +59,9 @@ Returned search text is matched against benchmark markers and exact 12-word span
 
 ## Files
 
-- [R1 manifest](../site/config/round_1_manifest.json)
-- [R2 manifest](../site/config/round_2_manifest.json)
-- [R3 manifest](../site/config/round_3_manifest.json)
+- [R1 manifest](../site/config/round_01.json)
+- [R2 manifest](../site/config/round_02.json)
+- [R3 manifest](../site/config/round_03.json)
 - [Full protocol metadata](../site/data/protocol.json)
 - [Data and configuration checksums](../site/downloads/checksums.json)
 

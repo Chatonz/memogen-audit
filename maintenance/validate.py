@@ -12,6 +12,10 @@ from pathlib import Path
 site=Path(sys.argv[1] if len(sys.argv)>1 else Path(__file__).parent/'site')
 rows=json.loads((site/'data/index.json').read_text())
 summary=json.loads((site/'data/summary.json').read_text())
+protocol=json.loads((site/'data/protocol.json').read_text())
+judge_prompt=site/protocol['judge']['prompt_file']
+assert judge_prompt.is_file(),judge_prompt
+assert hashlib.sha256(judge_prompt.read_bytes()).hexdigest()==protocol['judge']['prompt_sha256']
 assert len(rows)==1187
 assert Counter(r['round'] for r in rows)=={1:1000,2:122,3:65}
 assert len({r['key'] for r in rows})==1187
@@ -34,6 +38,8 @@ for rnd in [1,2,3]:
     rr=[r for r in rows if r['round']==rnd]
     agreement=sum(r['judge']==r['official'] for r in rr)/len(rr)
     assert abs(summary['rounds'][rnd-1]['official_agreement']['agreement']-agreement)<1e-12
+    assert (site/'config'/f'round_{rnd:02d}.json').is_file()
+    assert protocol['evaluations'][f'round_{rnd:02d}']['recorded_version']==rr[0]['official_version']
 assert summary['rounds'][0]['official_agreement']['agreement']==0.911
 assert summary['rounds'][1]['memory_own']==414
 assert summary['rounds'][1]['memory_other']==58
@@ -59,7 +65,8 @@ for p in site.rglob('*'):
 checksums=json.loads((site/'downloads/checksums.json').read_text())
 for filename,expected in checksums.items():
     assert hashlib.sha256((site/filename).read_bytes()).hexdigest()==expected,filename
-alignment_path=site/'downloads/official_r1_alignment.csv'
+alignment_path=site/'downloads/wise_round_01_scores.csv'
+assert alignment_path.is_file(),alignment_path
 if alignment_path.exists():
     aligned=list(csv.DictReader(alignment_path.open()));assert len(aligned)==1000
     for r in aligned:

@@ -37,8 +37,12 @@ def verdict(value):
     return {0: 'Fail', 1: 'Pass'}.get(value, '—')
 
 
+def evaluation_name(round_number):
+    return f'WISE · Round {round_number}'
+
+
 def round_links(prefix=''):
-    return ' · '.join(f'[Round {n}]({prefix}round-{n}.md)' for n in (1, 2, 3))
+    return ' · '.join(f'[Round {n}]({prefix}round_{n:02d}.md)' for n in (1, 2, 3))
 
 
 def build(root):
@@ -52,7 +56,7 @@ def build(root):
 
     results = table(
         ['Round', 'New images', 'Memory judge: pass', 'WISE: pass'],
-        [(f'[R{r["round"]}](results/round-{r["round"]}.md)', f'{r["n"]:,}',
+        [(f'[R{r["round"]}](results/round_{r["round"]:02d}.md)', f'{r["n"]:,}',
           ratio(r['judge_pass'], r['n']), ratio(r['official_pass'], r['n'])) for r in rounds],
     )
     agreement = table(
@@ -67,10 +71,10 @@ def build(root):
         for n in (1, 2, 3):
             r = by_key.get(f'r{n}-{sid}')
             if r:
-                images.append(f'<a href="results/examples/{sid}.md#round-{n}"><img src="site/{r["image"]}" width="220" alt="{title}, round {n}"></a><br>{verdict(r["judge"])} / {verdict(r["official"])}')
+                images.append(f'<a href="results/examples/wise_{int(sid):04d}.md#round-{n}"><img src="site/{r["image"]}" width="220" alt="{title}, round {n}"></a><br>{verdict(r["judge"])} / {verdict(r["official"])}')
             else:
                 images.append('Retained from R2')
-        examples.append([f'[{title} · #{sid}](results/examples/{sid}.md)', *images])
+        examples.append([f'[{title} · #{sid}](results/examples/wise_{int(sid):04d}.md)', *images])
     qualitative = table(['Task', 'Round 1', 'Round 2', 'Round 3'], examples)
     memory = table(
         ['Round', 'Selected records', 'Own task', 'Other task', 'Negative records'],
@@ -94,7 +98,7 @@ def build(root):
 
 Results for **{summary['unique_tasks']:,} WISE tasks** across three rounds, comprising **{summary['episodes']:,} generated image instances**.
 
-{round_links('results/')} · [Image comparisons](#image-comparisons) · [Experimental settings](results/settings.md) · [Download results](site/downloads/episodes.csv)
+{round_links('results/')} · [Image comparisons](#image-comparisons) · [Experimental setup](results/experimental_setup.md) · [Download results](site/downloads/episodes.csv)
 
 ## WISE results
 
@@ -102,14 +106,14 @@ R1 evaluates all 1,000 tasks. R2 and R3 generate new images for the 122 and 65 t
 
 {results}
 
-The memory judge uses GPT-5.5 with `evolution_wise_strict_v1`. WISE scores use the September 19 evaluation for R1 and the July evaluations for R2/R3. [Evaluation settings](results/settings.md#evaluation).
+The GPT-5.5 memory judge assigns binary decisions for memory admission and round routing. Generated images are scored using the WISE evaluation protocol. [Experimental setup](results/experimental_setup.md).
 
 <details>
 <summary>Memory-judge / WISE agreement</summary>
 
 {agreement}
 
-[R1 per-image alignment](site/downloads/official_r1_alignment.csv)
+[R1 per-image alignment](site/downloads/wise_round_01_scores.csv)
 
 </details>
 
@@ -149,7 +153,7 @@ The runs contain {sum(r['web_calls'] for r in rows):,} text-search calls and {su
 | --- | --- |
 | [Instance index](results/README.md) | All 1,187 instances, images and per-instance records |
 | [Episode CSV](site/downloads/episodes.csv) | Prompts, categories, decisions and retrieval counts |
-| [Experimental settings](results/settings.md) | Models, evaluation versions, prompts and memory rules |
+| [Experimental setup](results/experimental_setup.md) | Models, evaluation versions, prompts and memory rules |
 | [Round manifests](site/config) | Run configurations for R1–R3 |
 | [Instance records](site/data/episodes) | Generation prompts, judge outputs, memory selection, search results and tool-call records in JSON.gz |
 | [Checksums](site/downloads/checksums.json) | SHA256 hashes of data and configuration files |
@@ -158,21 +162,21 @@ The runs contain {sum(r['web_calls'] for r in rows):,} text-search calls and {su
 
     files['results/README.md'] = f'''# Instance index
 
-[Results](../README.md) · [Experimental settings](settings.md)
+[Results](../README.md) · [Experimental setup](experimental_setup.md)
 
-{table(['Round', 'Instances', 'Index'], [(f'R{r["round"]}', f'{r["n"]:,}', f'[Browse Round {r["round"]}](round-{r["round"]}.md)') for r in rounds])}
+{table(['Round', 'Instances', 'Index'], [(f'R{r["round"]}', f'{r["n"]:,}', f'[Browse Round {r["round"]}](round_{r["round"]:02d}.md)') for r in rounds])}
 
 Each row links to its image and complete JSON.gz record. The record contains the generation prompt, judge response, WISE evaluation, selected memories, search results and tool calls.
 
 ## Image comparisons
 
-{chr(10).join(f'- [{title} · WISE #{sid}](examples/{sid}.md)' for sid, title in EXAMPLES)}
+{chr(10).join(f'- [{title} · WISE #{sid}](examples/wise_{int(sid):04d}.md)' for sid, title in EXAMPLES)}
 
 ## Data
 
 - [All instances (CSV)](../site/downloads/episodes.csv)
 - [Memory provenance (CSV)](../site/downloads/memory_provenance.csv)
-- [R1 evaluation alignment (CSV)](../site/downloads/official_r1_alignment.csv)
+- [R1 evaluation alignment (CSV)](../site/downloads/wise_round_01_scores.csv)
 - [Machine-readable index (JSON)](../site/data/index.json)
 '''
 
@@ -184,7 +188,7 @@ Each row links to its image and complete JSON.gz record. The record contains the
 
 **{len(rr):,} images** · Memory-judge pass: **{ratio(sum(r['judge'] for r in rr), len(rr))}** · WISE pass: **{ratio(sum(r['official'] for r in rr), len(rr))}**
 
-Evaluation: {cell(rr[0]['official_version'])}. Memory columns count selected records.
+Evaluation: [{evaluation_name(rnd)}](experimental_setup.md#evaluation). Memory columns count selected records.
 '''
         sections = [header]
         for category in sorted({r['category'] for r in rr}):
@@ -193,7 +197,7 @@ Evaluation: {cell(rr[0]['official_version'])}. Memory columns count selected rec
                 [(f'[{r["id"]}](../site/{r["image"]})', cell(r['prompt']), verdict(r['judge']),
                   verdict(r['official']), f'{r["own_memory"]} / {r["other_memory"]}' if rnd > 1 else '—',
                   f'[JSON.gz](../site/data/episodes/{r["key"]}.json.gz)') for r in rr if r['category'] == category]))
-        files[f'results/round-{rnd}.md'] = '\n\n'.join(sections) + '\n'
+        files[f'results/round_{rnd:02d}.md'] = '\n\n'.join(sections) + '\n'
 
     for sid, title in EXAMPLES:
         sections = [f'# {title} · WISE #{sid}\n\n[Results](../../README.md) · [Instance index](../README.md)\n\n> {cell(by_key[f"r1-{sid}"]["prompt"])}']
@@ -208,7 +212,7 @@ Evaluation: {cell(rr[0]['official_version'])}. Memory columns count selected rec
 
 **Memory judge: {verdict(d['judge'])} · WISE: {verdict(d['official'])}**
 
-{d['generation_calls']} generation calls · {d['own_memory']} own-task / {d['other_memory']} other-task selected memories. Evaluation: {cell(d['official_version'])}.
+{d['generation_calls']} generation calls · {d['own_memory']} own-task / {d['other_memory']} other-task selected memories. Evaluation: [{evaluation_name(rnd)}](../experimental_setup.md#evaluation).
 
 ### Generation prompt
 
@@ -235,11 +239,11 @@ Evaluation: {cell(rr[0]['official_version'])}. Memory columns count selected rec
                         source = f'[{source}](../../site/{by_key[source_key]["image"]})'
                     selected.append([source, cell(record.get('polarity', '')), cell(record.get('relation_text', '')), cell(record.get('repair_hint', ''))])
                 sections.append('### Selected memories\n\n' + table(['Source', 'Polarity', 'Relation', 'Repair hint'], selected))
-            sections.append(f'[Complete instance record](../../site/data/episodes/{key}.json.gz) · [Round {rnd} index](../round-{rnd}.md)')
-        files[f'results/examples/{sid}.md'] = '\n\n'.join(sections) + '\n'
+            sections.append(f'[Complete instance record](../../site/data/episodes/{key}.json.gz) · [Round {rnd} index](../round_{rnd:02d}.md)')
+        files[f'results/examples/wise_{int(sid):04d}.md'] = '\n\n'.join(sections) + '\n'
 
     j = protocol['judge']
-    files['results/settings.md'] = f'''# Experimental settings
+    files['results/experimental_setup.md'] = f'''# Experimental setup
 
 [Results](../README.md) · [Instance index](README.md)
 
@@ -249,18 +253,20 @@ Evaluation: {cell(rr[0]['official_version'])}. Memory columns count selected rec
 | --- | --- |
 | Dataset | WISE, 1,000 tasks |
 | Controller / reference VLM | GPT-5.5 |
-| Memory judge | {j['model']} / `{j['profile']}` |
+| Memory judge | GPT-5.5; binary pass/fail decisions |
 | Judge inputs | Task prompt, target explanation and generated image |
 | Judge decision | Parsed JSON `pass` / `final_judgment` |
-| R1 WISE evaluation | September 19, 2026; Qwen3.5-35B-A3B; WISE protocol, revision `eb51174` |
+| R1 WISE evaluation | Qwen3.5-35B-A3B; WISE protocol, revision `eb51174` |
 | R1 evaluator decoding | Temperature 0; thinking disabled; maximum 500 tokens |
-| R2 / R3 WISE evaluation | July 2026; per-image evaluation versions recorded in the instance index |
+| R2 / R3 WISE evaluation | WISE protocol; scores aligned to the generated images in each round |
 | R2 / R3 routing | Generate new images for previous-round memory-judge failures; retain passing images |
 | Search | Live web text and image retrieval |
 
+[Evaluation versions and run configuration](../site/data/protocol.json)
+
 ### Judge configuration
 
-[Judge prompt](../site/config/archived_judge_prompt.txt) · [Prompt builder and parser](../site/config/judge_profiles.py.txt)
+[Judge prompt](../site/config/memory_judge_prompt.txt) · [Prompt builder and parser](../site/config/memory_judge.py)
 
 Prompt SHA256: `{j['prompt_sha256']}`.
 
@@ -279,14 +285,14 @@ The runner snapshot sets judge temperature to {j['temperature']['value']}; the c
 | Negative memory | Failure descriptions and repair hints |
 | R1 retrieval records | Legacy context; structured query/open/select events begin in R2 |
 
-[Memory admission code](../site/config/relation_memory.py.txt) · [Retrieval code](../site/config/memory_tools.py.txt) · [Selected-record provenance](../site/downloads/memory_provenance.csv)
+[Memory admission code](../site/config/memory_admission.py) · [Retrieval code](../site/config/memory_retrieval.py) · [Selected-record provenance](../site/downloads/memory_provenance.csv)
 
 ## Analogical transfer
 
-| Label | Run |
-| --- | --- |
-| All-memory v1 | `{summary['paired_source_runs'][0]['run']}` |
-| All-memory v2 | `{summary['paired_source_runs'][1]['run']}` |
+| Run | Targets | Memory |
+| --- | --- | --- |
+| All-memory v1 | 120 | All-memory retrieval |
+| All-memory v2 | 120 | All-memory retrieval |
 
 [Target prompts and source records](../site/data/transfer.json)
 
@@ -298,9 +304,9 @@ Returned search text is matched against benchmark markers and exact 12-word span
 
 ## Files
 
-- [R1 manifest](../site/config/round_1_manifest.json)
-- [R2 manifest](../site/config/round_2_manifest.json)
-- [R3 manifest](../site/config/round_3_manifest.json)
+- [R1 manifest](../site/config/round_01.json)
+- [R2 manifest](../site/config/round_02.json)
+- [R3 manifest](../site/config/round_03.json)
 - [Full protocol metadata](../site/data/protocol.json)
 - [Data and configuration checksums](../site/downloads/checksums.json)
 

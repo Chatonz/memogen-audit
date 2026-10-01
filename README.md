@@ -2,7 +2,7 @@
 
 Results for **1,000 WISE tasks** across three rounds, comprising **1,187 generated image instances**.
 
-[Round 1](results/round-1.md) · [Round 2](results/round-2.md) · [Round 3](results/round-3.md) · [Image comparisons](#image-comparisons) · [Experimental settings](results/settings.md) · [Download results](site/downloads/episodes.csv)
+[Round 1](results/round_01.md) · [Round 2](results/round_02.md) · [Round 3](results/round_03.md) · [Image comparisons](#image-comparisons) · [Experimental setup](results/experimental_setup.md) · [Download results](site/downloads/episodes.csv)
 
 ## WISE results
 
@@ -10,11 +10,11 @@ R1 evaluates all 1,000 tasks. R2 and R3 generate new images for the 122 and 65 t
 
 | Round | New images | Memory judge: pass | WISE: pass |
 | --- | --- | --- | --- |
-| [R1](results/round-1.md) | 1,000 | 878/1,000 (87.8%) | 925/1,000 (92.5%) |
-| [R2](results/round-2.md) | 122 | 57/122 (46.7%) | 74/122 (60.7%) |
-| [R3](results/round-3.md) | 65 | 15/65 (23.1%) | 39/65 (60.0%) |
+| [R1](results/round_01.md) | 1,000 | 878/1,000 (87.8%) | 925/1,000 (92.5%) |
+| [R2](results/round_02.md) | 122 | 57/122 (46.7%) | 74/122 (60.7%) |
+| [R3](results/round_03.md) | 65 | 15/65 (23.1%) | 39/65 (60.0%) |
 
-The memory judge uses GPT-5.5 with `evolution_wise_strict_v1`. WISE scores use the September 19 evaluation for R1 and the July evaluations for R2/R3. [Evaluation settings](results/settings.md#evaluation).
+The GPT-5.5 memory judge assigns binary decisions for memory admission and round routing. Generated images are scored using the WISE evaluation protocol. [Experimental setup](results/experimental_setup.md).
 
 <details>
 <summary>Memory-judge / WISE agreement</summary>
@@ -25,7 +25,7 @@ The memory judge uses GPT-5.5 with `evolution_wise_strict_v1`. WISE scores use t
 | R2 | 49 | 40 | 8 | 25 | 73.0% | 0.466 |
 | R3 | 13 | 24 | 2 | 26 | 56.9% | 0.222 |
 
-[R1 per-image alignment](site/downloads/official_r1_alignment.csv)
+[R1 per-image alignment](site/downloads/wise_round_01_scores.csv)
 
 </details>
 
@@ -35,9 +35,9 @@ Labels below each image show **memory judge / WISE**. Each task links to its gen
 
 | Task | Round 1 | Round 2 | Round 3 |
 | --- | --- | --- | --- |
-| [Ssireum · #2](results/examples/2.md) | <a href="results/examples/2.md#round-1"><img src="site/images/view/r1-2.webp" width="220" alt="Ssireum, round 1"></a><br>Fail / Pass | <a href="results/examples/2.md#round-2"><img src="site/images/view/r2-2.webp" width="220" alt="Ssireum, round 2"></a><br>Pass / Pass | Retained from R2 |
-| [Shamrock · #146](results/examples/146.md) | <a href="results/examples/146.md#round-1"><img src="site/images/view/r1-146.webp" width="220" alt="Shamrock, round 1"></a><br>Fail / Fail | <a href="results/examples/146.md#round-2"><img src="site/images/view/r2-146.webp" width="220" alt="Shamrock, round 2"></a><br>Pass / Fail | Retained from R2 |
-| [Venus flytrap · #718](results/examples/718.md) | <a href="results/examples/718.md#round-1"><img src="site/images/view/r1-718.webp" width="220" alt="Venus flytrap, round 1"></a><br>Fail / Fail | <a href="results/examples/718.md#round-2"><img src="site/images/view/r2-718.webp" width="220" alt="Venus flytrap, round 2"></a><br>Fail / Fail | <a href="results/examples/718.md#round-3"><img src="site/images/view/r3-718.webp" width="220" alt="Venus flytrap, round 3"></a><br>Pass / Pass |
+| [Ssireum · #2](results/examples/wise_0002.md) | <a href="results/examples/wise_0002.md#round-1"><img src="site/images/view/r1-2.webp" width="220" alt="Ssireum, round 1"></a><br>Fail / Pass | <a href="results/examples/wise_0002.md#round-2"><img src="site/images/view/r2-2.webp" width="220" alt="Ssireum, round 2"></a><br>Pass / Pass | Retained from R2 |
+| [Shamrock · #146](results/examples/wise_0146.md) | <a href="results/examples/wise_0146.md#round-1"><img src="site/images/view/r1-146.webp" width="220" alt="Shamrock, round 1"></a><br>Fail / Fail | <a href="results/examples/wise_0146.md#round-2"><img src="site/images/view/r2-146.webp" width="220" alt="Shamrock, round 2"></a><br>Pass / Fail | Retained from R2 |
+| [Venus flytrap · #718](results/examples/wise_0718.md) | <a href="results/examples/wise_0718.md#round-1"><img src="site/images/view/r1-718.webp" width="220" alt="Venus flytrap, round 1"></a><br>Fail / Fail | <a href="results/examples/wise_0718.md#round-2"><img src="site/images/view/r2-718.webp" width="220" alt="Venus flytrap, round 2"></a><br>Fail / Fail | <a href="results/examples/wise_0718.md#round-3"><img src="site/images/view/r3-718.webp" width="220" alt="Venus flytrap, round 3"></a><br>Pass / Pass |
 
 ## Memory retrieval
 
@@ -79,7 +79,7 @@ The runs contain 1,197 text-search calls and 7,107 returned results. Screening c
 | --- | --- |
 | [Instance index](results/README.md) | All 1,187 instances, images and per-instance records |
 | [Episode CSV](site/downloads/episodes.csv) | Prompts, categories, decisions and retrieval counts |
-| [Experimental settings](results/settings.md) | Models, evaluation versions, prompts and memory rules |
+| [Experimental setup](results/experimental_setup.md) | Models, evaluation versions, prompts and memory rules |
 | [Round manifests](site/config) | Run configurations for R1–R3 |
 | [Instance records](site/data/episodes) | Generation prompts, judge outputs, memory selection, search results and tool-call records in JSON.gz |
 | [Checksums](site/downloads/checksums.json) | SHA256 hashes of data and configuration files |
