@@ -84,3 +84,12 @@ The runs contain 1,197 text-search calls and 7,107 returned results. Screening c
 | [Instance records](site/data/episodes) | Generation prompts, judge outputs, memory selection, search results and tool-call records in JSON.gz |
 | [Checksums](site/downloads/checksums.json) | SHA256 hashes of data and configuration files |
 | [Build instructions](maintenance/README.md) | Regenerate the Markdown results and validate the export |
+
+## Transfer benchmark
+
+The analogical-transfer runs use 120 held-out WISE-style target tasks, sampled with 20 tasks per category (Cultural knowledge, Time, Space, Biology, Physical Knowledge, Chemistry). Each target keeps the reasoning relation of a WISE source task but changes the concrete instance, so the target prompt does not appear in WISE. The explanation states the intended answer and the visual criteria used for WISE-style scoring.
+
+| File | Contents |
+| --- | --- |
+| [wise_transfer_120.json](transfer_bench/wise_transfer_120.json) | `prompt_id`, `category`, `subcategory`, `prompt`, `explanation` |
+| [wise_transfer_120.csv](transfer_bench/wise_transfer_120.csv) | Same fields in CSV |
